@@ -10,7 +10,7 @@ spec:
   secretRef:
     name: ghcr-auth
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: apps
@@ -35,3 +35,23 @@ spec:
     service:
       type: ClusterIP
       port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apps
+  namespace: apps
+  # annotations:
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: apps.duyne.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: apps
+                port:
+                  number: 8080
