@@ -46,11 +46,20 @@ spec:
             prometheus.io/port: "10254"
       service:
         enabled: true
+      # service:
+        type: LoadBalancer
         annotations:
-          # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
-          service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
-          service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
-          service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
-          service.beta.kubernetes.io/aws-load-balancer-type: "elb"
+          service.beta.kubernetes.io/aws-load-balancer-type: external
+          service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+          service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+          service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: http
+          service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /healthz
+          service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: 10254
+        # annotations:
+        #   # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+        #   service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+        #   service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+        #   service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "3600"
+        #   service.beta.kubernetes.io/aws-load-balancer-type: "elb"
     admissionWebhooks:
       enabled: false
