@@ -1,0 +1,22 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: podinfo-exporter
+  namespace: monitoring
+  labels:
+    # release: monitoring
+    # app.kubernetes.io/component: monitoring
+    release: kube-prometheus-stack
+spec:
+  jobLabel: podinfo
+  namespaceSelector:
+    matchNames:
+    - apps
+  selector:
+    matchLabels:
+      # app.kubernetes.io/instance: podinfo
+      app.kubernetes.io/name: podinfo
+  endpoints:
+  - port: http
+    path: /metrics
