@@ -3,7 +3,10 @@ name: Release Altlayer Charts
 on:
   push:
     branches:
-      - main
+    - main
+    paths:
+    - helm/**
+
 
 permissions:
   contents: write
