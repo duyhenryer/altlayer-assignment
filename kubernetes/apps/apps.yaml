@@ -27,6 +27,8 @@ spec:
     image:
       repository: ghcr.io/duyhenryer/altlayer-assignment
       tag: "sha-e0ae4d5"
+    imagePullSecrets:
+      - name: ghcr-auth
     serviceAccount:
       create: false
     replicaCount: 2
