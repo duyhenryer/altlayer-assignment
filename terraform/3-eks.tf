@@ -44,8 +44,8 @@ module "eks" {
     spot = {
         name = "node-spot"
         min_size     = 1
-        max_size     = 1
-        desired_size = 4
+        max_size     = 4
+        desired_size = 2
 
           labels = {
             role = "spot"
