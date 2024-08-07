@@ -1,6 +1,5 @@
 ## Sameple App 
-I create a simple “Hello World” web application using FastAPI, and then Dockerize it.
-
+I create a simple “Hello World” web application using FastAPI and then Dockerize it.
 ## Test on local 
 we can test it by using curl:
 ```sh
