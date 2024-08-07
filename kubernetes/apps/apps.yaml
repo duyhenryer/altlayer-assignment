@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
   name: apps
-  namespace: flux-system
+  namespace: apps
 spec:
   interval: 10m
   type: oci
@@ -22,7 +22,7 @@ spec:
       chart: altlayer-chart
       sourceRef:
         kind: HelmRepository
-        name: flux-system
+        name: apps
   values:
     image:
       repository: ghcr.io/duyhenryer/altlayer-assignment
