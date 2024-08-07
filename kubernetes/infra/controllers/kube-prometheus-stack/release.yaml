@@ -98,34 +98,6 @@ spec:
             options:
               path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
 
-          # - name: 'platform-dashboards'
-          #   # orgId: 2
-          #   folder: 'Platform'
-          #   type: file
-          #   disableDeletion: true
-          #   editable: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/platform-dashboards
-              
-          # - name: 'security-dashboards'
-          #   # orgId: 2
-          #   folder: 'Security'
-          #   type: file
-          #   disableDeletion: true
-          #   editable: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/security-dashboards
-
-        # datasources:
-        #   datasources.yaml:
-        #     apiVersion: 1
-        #     datasources:
-        #       - name: Platform
-        #         type: prometheus
-        #         url: http://kube-prometheus-stack-prometheus.monitoring:9090
-        #         access: proxy
-        #         isDefault: false
-
       dashboards:
         grafana-dashboards-kubernetes:
           k8s-system-api-server:
