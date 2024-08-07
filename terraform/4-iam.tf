@@ -46,6 +46,17 @@ module "user1_iam_user" {
   force_destroy = true
 }
 
+module "user2_iam_user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "5.43.0"
+
+  name                          = "user2-demo"
+  create_iam_access_key         = false
+  create_iam_user_login_profile = false
+
+  force_destroy = true
+}
+
 module "allow_assume_eks_admins_iam_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "5.43.0"
