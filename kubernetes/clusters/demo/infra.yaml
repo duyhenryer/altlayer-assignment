@@ -10,7 +10,7 @@ spec:
   interval: 1h
   retryInterval: 1m
   timeout: 5m
-  path: ./infra/config
+  path: ./config
   prune: true
   sourceRef:
     kind: GitRepository
@@ -25,7 +25,7 @@ spec:
   interval: 1h
   retryInterval: 1m
   timeout: 5m
-  path: ./infra/controllers
+  path: ./controllers
   prune: true
   wait: true
   sourceRef:
