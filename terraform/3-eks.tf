@@ -14,15 +14,20 @@ module "eks" {
 
   enable_irsa = true
 
-  cluster_addons = {
-    aws-ebs-csi-driver = {
-      service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
-    }
-  }
+#   cluster_addons = {
+#     aws-ebs-csi-driver = {
+#       service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
+#     }
+    # coredns                = {}
+    # eks-pod-identity-agent = {}
+    # kube-proxy             = {}
+    # vpc-cni                = {}
+#   }
 
   eks_managed_node_group_defaults = {
-    disk_size = 20
+    instance_types = ["t3.medium", "m5.large"]
     ami_type = "AL2_x86_64"
+    disk_size = 20
   }
 
   eks_managed_node_groups = {
@@ -50,48 +55,33 @@ module "eks" {
             role = "spot"
           }
 
-        instance_types = ["t3.medium"]
+        instance_types = ["t3.large"]
         capacity_type  = "SPOT"
     }
 
-    spot = {
-        name = "node-spot-01"
-        min_size     = 1
-        max_size     = 3
-        desired_size = 1
+    # spot = {
+    #     name = "node-spot-01"
+    #     min_size     = 1
+    #     max_size     = 3
+    #     desired_size = 1
 
-          labels = {
-            role = "spot"
-          }
+    #       labels = {
+    #         role = "spot"
+    #       }
 
-        #   taints = [{
-        #     key    = "market"
-        #     value  = "spot"
-        #     effect = "NO_SCHEDULE"
-        #   }]
+    #     #   taints = [{
+    #     #     key    = "market"
+    #     #     value  = "spot"
+    #     #     effect = "NO_SCHEDULE"
+    #     #   }]
 
-        instance_types = ["t3.small"]
-        capacity_type  = "SPOT"
-    }
+    #     instance_types = ["t3.small"]
+    #     capacity_type  = "SPOT"
+    # }
   }
 
 
   tags = {
     Environment = "${local.env}"
   }
-}
-
-data "aws_iam_policy" "ebs_csi_policy" {
-  arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-}
-
-module "irsa-ebs-csi" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version = "5.39.0"
-
-  create_role                   = true
-  role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name}"
-  provider_url                  = module.eks.oidc_provider
-  role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
 }
