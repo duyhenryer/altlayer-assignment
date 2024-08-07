@@ -81,7 +81,7 @@ spec:
 
     grafana:
       defaultDashboardsEnabled: false
-      adminPassword: flux
+      adminPassword: dem@123
     # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
     # grafana:
       # Provision grafana-dashboards-kubernetes
@@ -122,57 +122,27 @@ spec:
           nginx-ingress-offices:
             url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json
             token: ''
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: prometheus
-#   namespace: monitoring
-#   annotations:
-#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-#     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-#     cert-manager.io/cluster-issuer: "self-signed"
-# spec:
-#   ingressClassName: nginx
-#   tls:
-#     - hosts:
-#         - prometheus.flux.local
-#       secretName: prometheus-ingress-tls
-#   rules:
-#     - host: prometheus.flux.local
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: kube-prometheus-stack-prometheus
-#                 port:
-#                   number: 9090
-# ---
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: grafana
-#   namespace: monitoring
-#   annotations:
-#     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-#     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-#     cert-manager.io/cluster-issuer: "self-signed"
-# spec:
-#   ingressClassName: nginx
-#   tls:
-#     - hosts:
-#         - grafana.flux.local
-#       secretName: grafana-ingress-tls
-#   rules:
-#     - host: grafana.flux.local
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: kube-prometheus-stack-grafana
-#                 port:
-#                   number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  # annotations:
+  #   nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  #   nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+  #   cert-manager.io/cluster-issuer: "self-signed"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.duyne.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-grafana
+                port:
+                  number: 80
