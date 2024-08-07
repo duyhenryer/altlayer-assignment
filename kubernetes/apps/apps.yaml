@@ -52,6 +52,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: apps
+                name: apps-altlayer-chart
                 port:
                   number: 8080
