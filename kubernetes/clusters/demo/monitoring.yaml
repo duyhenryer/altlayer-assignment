@@ -11,10 +11,8 @@ spec:
   prune: true
   wait: true
   sourceRef:
-    # kind: GitRepository
-    # name: flux-system
-    kind: OCIRepository
-    name: infra-source
+    kind: GitRepository
+    name: flux-system
   path: ./controllers/kube-prometheus-stack
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -31,8 +29,6 @@ spec:
   prune: true
   wait: true
   sourceRef:
-    # kind: GitRepository
-    # name: flux-system
-    kind: OCIRepository
-    name: infra-source
+    kind: GitRepository
+    name: flux-system
   path: ./config/monitoring
