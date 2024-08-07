@@ -1,0 +1,33 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: apps
+  namespace: apps
+spec:
+  interval: 10m
+  type: oci
+  url: oci://ghcr.io/duyhenryer/altlayer-assignment/altlayer-chart
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: apps
+  namespace: apps
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: altlayer-chart
+      sourceRef:
+        kind: HelmRepository
+        name: apps
+  values:
+    image:
+      repository: ghcr.io/duyhenryer/altlayer-assignment
+      tag: "sha-e0ae4d5"
+    serviceAccount:
+      create: false
+    replicaCount: 2
+    service:
+      type: ClusterIP
+      port: 8080
