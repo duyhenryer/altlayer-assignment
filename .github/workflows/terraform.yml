@@ -25,13 +25,9 @@ env:
 
 jobs:
   terraform:
-    name: "INFRA AWS"
+    name: "Infra AWS"
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TF_IN_AUTOMATION: true
-      EXPAND_SUMMARY_DETAILS: true
-    timeout-minutes: 10
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
@@ -54,60 +50,65 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-southeast-1
 
-      - name: Terraform Format
-        id: fmt
-        run: terraform fmt
-        continue-on-error: true
-
-      - name: Post Format
-        if: always() && github.ref != 'refs/heads/main' && (steps.fmt.outcome == 'success' || steps.fmt.outcome == 'failure')
-        uses: jimdo/terraform-pr-commenter@main
-        with:
-          commenter_type: fmt
-          commenter_input: ${{ format('{0}{1}', steps.fmt.outputs.stdout, steps.fmt.outputs.stderr) }}
-          commenter_exitcode: ${{ steps.fmt.outputs.exitcode }}
-
-      - name: Terraform Init
+      - name: Terraform init
         id: init
         run: terraform init -backend-config="bucket=$BUCKET_TF_STATE"
-
-      - name: Post Init
-        if: always() && github.ref != 'refs/heads/main' && (steps.init.outcome == 'success' || steps.init.outcome == 'failure')
-        uses: jimdo/terraform-pr-commenter@main
-        with:
-          commenter_type: init
-          commenter_input: ${{ format('{0}{1}', steps.init.outputs.stdout, steps.init.outputs.stderr) }}
-          commenter_exitcode: ${{ steps.init.outputs.exitcode }}
-
-      - name: Terraform Validate
+ 
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+    
+      - name: Terraform validate
         id: validate
         run: terraform validate
  
-      - name: Post Validate
-        if: always() && github.ref != 'refs/heads/main' && (steps.validate.outcome == 'success' || steps.validate.outcome == 'failure')
-        uses: jimdo/terraform-pr-commenter@main
-        with:
-          commenter_type: validate
-          commenter_input: ${{ format('{0}{1}', steps.validate.outputs.stdout, steps.validate.outputs.stderr) }}
-          commenter_exitcode: ${{ steps.validate.outputs.exitcode }}
-
-      - name: Terraform Plan
+      - name: Terraform plan
         id: plan
-        run: terraform plan -out workspace.plan
-
-      - name: Post Plan
-        if: always() && github.ref != 'refs/heads/main' && (steps.plan.outcome == 'success' || steps.plan.outcome == 'failure')
-        uses: jimdo/terraform-pr-commenter@main
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
+    
+      - uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
-          commenter_type: plan
-          commenter_input: ${{ format('{0}{1}', steps.plan.outputs.stdout, steps.plan.outputs.stderr) }}
-          commenter_exitcode: ${{ steps.plan.outputs.exitcode }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
 
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+ 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
   
       - name: Terraform Apply
-        id: apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply workspace.plan
+        run: terraform apply -auto-approve -input=false
