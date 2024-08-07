@@ -1,4 +1,4 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta2
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: kube-prometheus-stack
@@ -130,9 +130,6 @@ metadata:
   name: grafana
   namespace: monitoring
   # annotations:
-  #   nginx.ingress.kubernetes.io/ssl-redirect: "false"
-  #   nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
-  #   cert-manager.io/cluster-issuer: "self-signed"
 spec:
   ingressClassName: nginx
   rules:
