@@ -1,0 +1,148 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+spec:
+  interval: 1h
+  chart:
+    spec:
+      version: "55.x"
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+      interval: 1h
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
+  # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+  values:
+    alertmanager:
+      enabled: false
+    prometheus:
+      prometheusSpec:
+        retention: 5d
+        resources:
+          requests:
+            cpu: 200m
+            memory: 200Mi
+        podMonitorNamespaceSelector:
+          matchLabels:
+            release: kube-prometheus-stack # đang test lable này cho sloth 
+        podMonitorSelector:
+          matchLabels:
+            app.kubernetes.io/component: monitoring
+        # # serviceMonitorSelector: {}
+        # ## Example which selects ServiceMonitors with label "prometheus" set to "somelabel"
+        # serviceMonitorSelector:
+        #   matchLabels:
+        #     release: monitoring
+
+        # ## Namespaces to be selected for ServiceMonitor discovery.
+        # ##
+        # # serviceMonitorNamespaceSelector: {}
+        # ## Example which selects ServiceMonitors in namespaces with label "prometheus" set to "somelabel"
+        # serviceMonitorNamespaceSelector:
+        #   matchLabels:
+        #     release: monitoring
+
+        ## If nil, select own namespace. Namespaces to be selected for PrometheusRules discovery.
+        ruleNamespaceSelector: {}
+        ## Example which selects PrometheusRules in namespaces with label "prometheus" set to "somelabel"
+        # ruleNamespaceSelector:
+        #   matchLabels:
+        #     prometheus: somelabel
+
+        ## If true, a nil or {} value for prometheus.prometheusSpec.ruleSelector will cause the
+        ## prometheus resource to be created with selectors based on values in the helm deployment,
+        ## which will also match the PrometheusRule resources created
+        ##
+        ruleSelectorNilUsesHelmValues: false
+
+        ## PrometheusRules to be selected for target discovery.
+        ## If {}, select all PrometheusRules
+        ##
+        ruleSelector: {}
+        ## Example which select all PrometheusRules resources
+        ## with label "prometheus" with values any of "example-rules" or "example-rules-2"
+        # ruleSelector:
+        #   matchExpressions:
+        #     - key: prometheus
+        #       operator: In
+        #       values:
+        #         - example-rules
+        #         - example-rules-2
+        #
+        ## Example which select all PrometheusRules resources with label "role" set to "example-rules"
+        # ruleSelector:
+        #   matchLabels:
+        #     role: example-rules
+
+    grafana:
+      defaultDashboardsEnabled: false
+      adminPassword: dem@123
+    # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+    # grafana:
+      # Provision grafana-dashboards-kubernetes
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+          - name: 'grafana-dashboards-kubernetes'
+            orgId: 1
+            folder: 'Kubernetes'
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
+
+      dashboards:
+        grafana-dashboards-kubernetes:
+          k8s-system-api-server:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-api-server.json
+            token: ''
+          k8s-system-coredns:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-coredns.json
+            token: ''
+          k8s-views-global:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+            token: ''
+          k8s-views-namespaces:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+            token: ''
+          k8s-views-nodes:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+            token: ''
+          k8s-views-pods:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
+            token: ''
+          # source: https://github.com/kubernetes/ingress-nginx/tree/main/deploy/grafana/dashboards
+          nginx-ingress-offices:
+            url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/grafana/dashboards/nginx.json
+            token: ''
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  # annotations:
+  #   nginx.ingress.kubernetes.io/ssl-redirect: "false"
+  #   nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+  #   cert-manager.io/cluster-issuer: "self-signed"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.duyne.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kube-prometheus-stack-grafana
+                port:
+                  number: 80
