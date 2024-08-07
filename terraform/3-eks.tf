@@ -40,12 +40,25 @@ module "eks" {
     #         role = "on-demand"
     #       }
     # }
-
     spot = {
-        name = "node-spot"
+        name = "node-spot-02"
         min_size     = 2
         max_size     = 5
-        desired_size = 3
+        desired_size = 2
+
+          labels = {
+            role = "spot"
+          }
+
+        instance_types = ["t3.medium"]
+        capacity_type  = "SPOT"
+    }
+
+    spot = {
+        name = "node-spot-01"
+        min_size     = 1
+        max_size     = 3
+        desired_size = 1
 
           labels = {
             role = "spot"
