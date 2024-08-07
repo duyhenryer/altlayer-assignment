@@ -13,7 +13,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./controllers/kube-prometheus-stack
+  path: ./infra/controllers/kube-prometheus-stack
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -31,4 +31,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  path: ./config/monitoring
+  path: ./infra/config/monitoring
