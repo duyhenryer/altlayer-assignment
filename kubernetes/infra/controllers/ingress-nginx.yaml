@@ -37,9 +37,6 @@ spec:
         type: "RollingUpdate"
         rollingUpdate:
           maxUnavailable: 1
-      hostPort:
-        enabled: true
-      terminationGracePeriodSeconds: 0
       metrics:
         port: 10254
         enabled: true
