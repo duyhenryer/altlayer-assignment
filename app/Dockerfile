@@ -6,10 +6,10 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 
 # Install the dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
 
 # Expose the port
 EXPOSE 8080
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["fastapi", "run", "app.py", "--port", "8080"]
