@@ -13,8 +13,8 @@ spec:
   path: ./infra/config
   prune: true
   sourceRef:
-    kind: OCIRepository
-    name: infra-source
+    kind: GitRepository
+    name: flux-system
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -29,5 +29,5 @@ spec:
   prune: true
   wait: true
   sourceRef:
-    kind: OCIRepository
-    name: infra-source
+    kind: GitRepository
+    name: flux-system
