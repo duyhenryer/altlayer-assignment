@@ -26,26 +26,26 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    on-demand = {
-        name = "node-on-demand"
+    # on-demand = {
+    #     name = "node-on-demand"
 
-        instance_types = ["t3.small"]
-        capacity_type  = "ON_DEMAND"
+    #     instance_types = ["t3.small"]
+    #     capacity_type  = "ON_DEMAND"
 
-        min_size     = 1
-        max_size     = 1
-        desired_size = 1
+    #     min_size     = 1
+    #     max_size     = 1
+    #     desired_size = 1
 
-          labels = {
-            role = "on-demand"
-          }
-    }
+    #       labels = {
+    #         role = "on-demand"
+    #       }
+    # }
 
     spot = {
         name = "node-spot"
         min_size     = 1
         max_size     = 1
-        desired_size = 1
+        desired_size = 4
 
           labels = {
             role = "spot"
