@@ -10,10 +10,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
  
-      - name: Execute load tests on Artillery Cloud
-        uses: artilleryio/action-cli@v1
-        with:
-          command: run ./.github/tool/asciiart-load-test.yml --record --key ${{ secrets.ARTILLERY_API_KEY }}
+      # - name: Execute load tests on Artillery Cloud
+      #   uses: artilleryio/action-cli@v1
+      #   with:
+      #     command: run ./.github/tool/asciiart-load-test.yml --record --key ${{ secrets.ARTILLERY_API_KEY }}
 
       - name: Load tests
         uses: artilleryio/action-cli@v1
@@ -22,7 +22,7 @@ jobs:
           command: run ./.github/tool/asciiart-load-test.yml --output ./report.json
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: artillery-report
