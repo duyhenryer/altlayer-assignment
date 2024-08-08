@@ -5,7 +5,8 @@
 ```sh
 kubectl
 helm 
-flux 
+flux
+awscli 
 ```
 ## Diagram Basic 
 ![Diagram](./images/diagram.png)
@@ -16,6 +17,7 @@ flux
 - I created a `workflow` to manage tf code with easy collaboration between within the team.
 - Have using S3 to Backend store state
 - Using terraform module vpc and eks 
+
 ***Verify the Cluster***
 Use `kubectl` commands to verify your cluster configuration.
 ```sh
@@ -49,11 +51,11 @@ Run the bootstrap.
 ## Mission 3: EKS Monitoring
 Tasks:
 1. Deploy kube-prometheus-stack via FluxCD
-  - Go to the folder `kubernetes/infra` to deploy it.
+  - Go to the folder `kubernetes/infra/controllers/` to deploy it.
 2. Grafana (more)
   - Access to link: [http://grafana.duyne.me ](http://grafana.duyne.me)
   - user/pass: `admin/dem@123`
-  - Board of Kubernetes and Ingress-Nginx
+  - Dashboard for Kubernetes and Ingress-Nginx
 
 ## Mission 4: Sample App Deployment
 Tasks:
@@ -76,8 +78,11 @@ Tasks:
 
 ## Mission 5: Stress Testing
 
-
+```
+artillery run test.yml --record --key a9_z9KbVQvrs77iQYnZnur9-mMLW3UFhCBa
+```
 
 ## Todo more 
+- Automate image updates
 - SSL
 - Autoscale via Karpenter
