@@ -33,6 +33,10 @@ spec:
       interval: 12h
   values:
     controller:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+        maxReplicas: 5
       updateStrategy:
         type: "RollingUpdate"
         rollingUpdate:
