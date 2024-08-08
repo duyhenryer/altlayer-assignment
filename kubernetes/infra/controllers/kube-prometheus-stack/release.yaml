@@ -29,60 +29,27 @@ spec:
             memory: 200Mi
         podMonitorNamespaceSelector:
           matchLabels:
-            release: kube-prometheus-stack # đang test lable này cho sloth 
+            release: kube-prometheus-stack
         podMonitorSelector:
           matchLabels:
             app.kubernetes.io/component: monitoring
-        # # serviceMonitorSelector: {}
-        # ## Example which selects ServiceMonitors with label "prometheus" set to "somelabel"
-        # serviceMonitorSelector:
-        #   matchLabels:
-        #     release: monitoring
-
-        # ## Namespaces to be selected for ServiceMonitor discovery.
-        # ##
-        # # serviceMonitorNamespaceSelector: {}
-        # ## Example which selects ServiceMonitors in namespaces with label "prometheus" set to "somelabel"
-        # serviceMonitorNamespaceSelector:
-        #   matchLabels:
-        #     release: monitoring
-
-        ## If nil, select own namespace. Namespaces to be selected for PrometheusRules discovery.
         ruleNamespaceSelector: {}
-        ## Example which selects PrometheusRules in namespaces with label "prometheus" set to "somelabel"
-        # ruleNamespaceSelector:
-        #   matchLabels:
-        #     prometheus: somelabel
-
-        ## If true, a nil or {} value for prometheus.prometheusSpec.ruleSelector will cause the
-        ## prometheus resource to be created with selectors based on values in the helm deployment,
-        ## which will also match the PrometheusRule resources created
-        ##
         ruleSelectorNilUsesHelmValues: false
-
-        ## PrometheusRules to be selected for target discovery.
-        ## If {}, select all PrometheusRules
-        ##
         ruleSelector: {}
-        ## Example which select all PrometheusRules resources
-        ## with label "prometheus" with values any of "example-rules" or "example-rules-2"
-        # ruleSelector:
-        #   matchExpressions:
-        #     - key: prometheus
-        #       operator: In
-        #       values:
-        #         - example-rules
-        #         - example-rules-2
-        #
-        ## Example which select all PrometheusRules resources with label "role" set to "example-rules"
-        # ruleSelector:
-        #   matchLabels:
-        #     role: example-rules
 
     grafana:
       defaultDashboardsEnabled: false
       adminPassword: dem@123
     # https://github.com/grafana/helm-charts/blob/main/charts/grafana/values.yaml
+
+      resources:
+        limits:
+          cpu: 500m
+          memory: 512Mi
+        requests:
+          cpu: 200m
+          memory: 248Mi
+
     # grafana:
       # Provision grafana-dashboards-kubernetes
       dashboardProviders:
