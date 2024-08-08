@@ -127,7 +127,7 @@ scenarios:
 </details>
 
 ```sh
-artillery run test.yml --record --key $TOKEN
+artillery run asciiart-load-test.yml --record --key $TOKEN
 ```
 <details>
 <summary>Summary report</summary>
