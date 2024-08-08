@@ -67,6 +67,11 @@ Tasks:
   - I created a helm-chart in folder `helm`. Its sample chart to deploy.
   - Using Github Action
   - Have `workflow` to release chart via OCI of Github
+  - OCI Registry for Chart
+    ```sh
+    # login to registry and then
+    helm pull oci://ghcr.io/duyhenryer/altlayer-assignment/altlayer-chart --version 0.1.0
+    ```
 3. Deploy it via FluxCD.
   - I deployed app in folder `kubernetes/apps`
   - Access to link: [http://apps.duyne.me/](http://apps.duyne.me/)
@@ -77,10 +82,111 @@ Tasks:
     ```
 
 ## Mission 5: Stress Testing
+I created a file to load test `asciiart-load-test.yml`
+
+<details>
+<summary> </summary>
+
+```yaml
+config:
+  # This is a test server run by team Artillery
+  # It's designed to be highly scalable
+  target: http://apps.duyne.me
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      rampTo: 5
+      name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 10
+      name: Ramp up load
+    - duration: 30
+      arrivalRate: 10
+      rampTo: 30
+      name: Spike phase
+  # Load & configure a couple of useful plugins
+  # https://docs.art/reference/extensions
+  plugins:
+    ensure: {}
+    apdex: {}
+    metrics-by-endpoint: {}
+  apdex:
+    threshold: 100
+  ensure:
+    thresholds:
+      - http.response_time.p99: 100
+      - http.response_time.p95: 75
+scenarios:
+  - flow:
+      - loop:
+          - get:
+              url: '/'
+        count: 100
+```
+</details>
+
+```sh
+artillery run test.yml --record --key $TOKEN
+```
+<details>
+<summary>Summary report</summary>
+
+```yaml
+.... 
+
+--------------------------------
+Summary report @ 15:12:54(+0700)
+--------------------------------
+
+apdex.frustrated: .............................................................. 555
+apdex.satisfied: ............................................................... 75293
+apdex.tolerated: ............................................................... 30252
+errors.ENOTFOUND: .............................................................. 1
+errors.ETIMEDOUT: .............................................................. 168
+http.codes.200: ................................................................ 106100
+http.downloaded_bytes: ......................................................... 4137900
+http.request_rate: ............................................................. 862/sec
+http.requests: ................................................................. 106269
+http.response_time:
+  min: ......................................................................... 1
+  max: ......................................................................... 902
+  mean: ........................................................................ 72.2
+  median: ...................................................................... 45.2
+  p95: ......................................................................... 165.7
+  p99: ......................................................................... 284.3
+http.responses: ................................................................ 106100
+plugins.metrics-by-endpoint./.codes.200: ....................................... 106100
+plugins.metrics-by-endpoint./.errors.ENOTFOUND: ................................ 1
+plugins.metrics-by-endpoint./.errors.ETIMEDOUT: ................................ 168
+plugins.metrics-by-endpoint.response_time./:
+  min: ......................................................................... 1
+  max: ......................................................................... 902
+  mean: ........................................................................ 72.2
+  median: ...................................................................... 45.2
+  p95: ......................................................................... 165.7
+  p99: ......................................................................... 284.3
+vusers.completed: .............................................................. 1061
+vusers.created: ................................................................ 1230
+vusers.created_by_name.0: ...................................................... 1230
+vusers.failed: ................................................................. 169
+vusers.session_length:
+  min: ......................................................................... 5001.9
+  max: ......................................................................... 13158.6
+  mean: ........................................................................ 7496.2
+  median: ...................................................................... 6312.2
+  p95: ......................................................................... 11734.2
+  p99: ......................................................................... 12213.1
+
+Checks:
+fail: http.response_time.p95 < 75
+fail: http.response_time.p99 < 100
+
+Apdex score: 0.852205466540999 (good)
 
 ```
-artillery run test.yml --record --key a9_z9KbVQvrs77iQYnZnur9-mMLW3UFhCBa
-```
+</details>
+
 
 ## Todo more 
 - Automate image updates
