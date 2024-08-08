@@ -31,10 +31,14 @@ spec:
       - name: ghcr-auth
     serviceAccount:
       create: false
-    replicaCount: 2
+    # replicaCount: 2
     service:
       type: ClusterIP
       port: 8080
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 6
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
