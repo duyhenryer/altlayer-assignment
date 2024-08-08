@@ -2,7 +2,7 @@
 name: Artillery Load Test
 on:
   schedule:
-    - cron: "0 */6 * * *" # Run every 6 hours
+    - cron: "*/20 * * * *" # Run every 6 hours
 jobs:
   artillery:
     runs-on: ubuntu-latest
@@ -10,7 +10,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
  
-      - name: Execute load tests
+      - name: Execute load tests on Artillery Cloud
         uses: artilleryio/action-cli@v1
         with:
           command: run ./.github/tool/asciiart-load-test.yml --record --key ${{ secrets.ARTILLERY_API_KEY }}
+
+      - name: Load tests
+        uses: artilleryio/action-cli@v1
+        with:
+          # Save the test run report at "./report.json"
+          command: run ./.github/tool/asciiart-load-test.yml --output ./report.json
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: artillery-report
+          # Reference the generated report in the file system.
+          path: ./report.json
+    
