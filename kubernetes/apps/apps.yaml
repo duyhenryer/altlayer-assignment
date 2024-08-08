@@ -19,6 +19,7 @@ spec:
   interval: 10m
   chart:
     spec:
+      version: "0.1.x"
       chart: altlayer-chart
       sourceRef:
         kind: HelmRepository
