@@ -26,7 +26,7 @@ spec:
         resources:
           requests:
             cpu: 200m
-            memory: 200Mi
+            memory: 512Mi
         podMonitorNamespaceSelector:
           matchLabels:
             release: kube-prometheus-stack
